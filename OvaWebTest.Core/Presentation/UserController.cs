@@ -39,7 +39,6 @@ namespace OvaWebTest.Presentation
 
         /// <summary>
         /// Fetch a specific user information.
-        /// TODO: Program the entire functionality to fetch user information.
         /// </summary>
         /// <param name="userName">the user's username</param>
         /// <returns>A status code</returns>
@@ -47,12 +46,17 @@ namespace OvaWebTest.Presentation
         [HttpGet]
         public async Task<IActionResult> GetUserProfile(string userName)
         {
-            throw new NotImplementedException();
+            try {
+                UserDTO userDTO = await userService.GetProfileAsync(userName);
+                return StatusCode(StatusCodes.Status200OK, userDTO);
+            }
+            catch{
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
         }
 
         /// <summary>
         /// Delete a specific user.
-        /// TODO: Program the entire user deletion functionality.
         /// </summary>
         /// <param name="userName">the user's username</param>
         /// <returns>A status code</returns>
@@ -60,7 +64,13 @@ namespace OvaWebTest.Presentation
         [HttpDelete]
         public async Task<IActionResult> DeleteUser(string userName)
         {
-            throw new NotImplementedException();
+            try{
+                await userService.DeleteAsync(userName);
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            catch{
+                return StatusCode(StatusCodes.Status400BadRequest);
+            }
         }
     }
 }

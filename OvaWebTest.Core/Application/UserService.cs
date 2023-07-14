@@ -37,23 +37,23 @@ namespace OvaWebTest.Application
 
         /// <summary>
         /// Fetch a specific user information.
-        /// TODO: Program the entire functionality to fetch user information.
         /// </summary>
         /// <param name="userName">the user's username</param>
         /// <returns>The user information</returns>
         public async Task<UserDTO> GetProfileAsync(string userName)
         {
-            throw new NotImplementedException();
+            User user = await userManager.FindByNameAsync(userName);
+            return userDTOAssembler.Assemble(user);
         }
 
         /// <summary>
         /// Delete a specific user.
-        /// TODO: Program the entire user deletion functionality.
         /// </summary>
         /// <param name="userName">the user's username</param>
         public async Task DeleteAsync(string userName)
         {
-            throw new NotImplementedException();
+            User user = await userManager.FindByNameAsync(userName);
+            IdentityResult iRes = await userManager.DeleteAsync(user);
         }
     }
 }
