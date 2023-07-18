@@ -32,7 +32,7 @@ namespace OvaWebTest.Presentation
         [HttpPost]
         public async Task<IActionResult> SignUp(UserSignUpDTO userSignUpDTO)
         {
-            UserDTO userDTO = await userService.CreateAsync(userSignUpDTO);
+            UserDTO userDTO = await userService.CreateAsync(userSignUpDTO); //TODO need to add flag for duplicate account
 
             return StatusCode(StatusCodes.Status201Created, userDTO);
         }

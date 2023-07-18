@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using OvaWebTest.Application;
 using OvaWebTest.Domain;
 using OvaWebTest.Persistence.InMemory;
+using Microsoft.AspNetCore.Cors;
 
 namespace OvaWebTest
 {
@@ -38,6 +39,11 @@ namespace OvaWebTest
             });
 
             services.AddSwaggerGen();
+            //services cors
+            services.AddCors(p => p.AddPolicy("corsapp", builder =>
+            {
+                builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+            }));
         }
 
         private void InjectApplicationDependencies(IServiceCollection services)
@@ -62,6 +68,11 @@ namespace OvaWebTest
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "OvaWebTest v1.0.0");
                     c.RoutePrefix = string.Empty;
                 });
+
+                app.UseHttpsRedirection();
+                app.UseRouting();
+                app.UseCors("corsapp");
+                app.UseAuthorization();
             }
 
             app.UseRouting();
