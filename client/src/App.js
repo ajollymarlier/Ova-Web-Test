@@ -53,18 +53,19 @@ function App() {
               "confirmPassword": signUpConfirmPassword
             }
 
-            console.log(signUpObject)
-
             const response = await fetch('https://localhost:5001/User/signup', {
               method: 'POST',
               mode: 'cors',
               headers: {'content-type': 'application/json'},
-              dataType: "json",
-              body: signUpObject
+              body: JSON.stringify(signUpObject)
             })
 
-            const resBody = await response.json()
-            console.log(resBody)
+            if (response.status == 201){
+              alert("User Created!")
+            }
+            else {
+              alert("Could Not Create User!")
+            }
           }}>
 
             Sign Up
