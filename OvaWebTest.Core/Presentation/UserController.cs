@@ -5,6 +5,7 @@ using OvaWebTest.Application;
 using OvaWebTest.Application.DTOs;
 using System;
 using System.Threading.Tasks;
+using OvaWebTest.Application.Exceptions;
 
 namespace OvaWebTest.Presentation
 {
@@ -24,7 +25,6 @@ namespace OvaWebTest.Presentation
 
         /// <summary>
         /// Create a user from a sign up request.
-        /// TODO: Program all error handling for the user creation functionality.
         /// </summary>
         /// <param name="userSignUpDTO">The sign up request</param>
         /// <returns>A status code</returns>
@@ -32,9 +32,23 @@ namespace OvaWebTest.Presentation
         [HttpPost]
         public async Task<IActionResult> SignUp(UserSignUpDTO userSignUpDTO)
         {
-            UserDTO userDTO = await userService.CreateAsync(userSignUpDTO); //TODO need to add flag for duplicate account
+            ObjectResult finalCodeRes;
+            
+            try{ 
+                UserDTO userDTO = await userService.CreateAsync(userSignUpDTO); 
+                finalCodeRes = StatusCode(StatusCodes.Status201Created, userDTO);
+            }
+            catch (UserAlreadyExistsException e){
+                finalCodeRes = StatusCode(StatusCodes.Status400BadRequest, userSignUpDTO);
+            }
+            catch (UserCreationException e){
+                finalCodeRes = StatusCode(StatusCodes.Status400BadRequest, userSignUpDTO);
+            }
+            catch {
+                finalCodeRes = StatusCode(StatusCodes.Status500InternalServerError, userSignUpDTO);
+            }
 
-            return StatusCode(StatusCodes.Status201Created, userDTO);
+            return finalCodeRes;
         }
 
         /// <summary>

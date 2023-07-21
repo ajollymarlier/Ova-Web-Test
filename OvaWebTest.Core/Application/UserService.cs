@@ -3,6 +3,7 @@ using OvaWebTest.Application.DTOs;
 using OvaWebTest.Domain;
 using System;
 using System.Threading.Tasks;
+using OvaWebTest.Application.Exceptions;
 
 namespace OvaWebTest.Application
 {
@@ -30,9 +31,17 @@ namespace OvaWebTest.Application
         {
             User user = userFactory.Create(userSignUpDTO);
 
-            await userManager.CreateAsync(user);
+            IdentityResult ires = await userManager.CreateAsync(user);
 
-            return userDTOAssembler.Assemble(user);
+            if (ires is null){
+                throw new UserAlreadyExistsException(userSignUpDTO);
+            }
+            else if (ires != null && ires.Succeeded){
+                return userDTOAssembler.Assemble(user);
+            }
+            else {
+                throw new UserCreationException(userSignUpDTO, ires.Errors);
+            }
         }
 
         /// <summary>
@@ -54,6 +63,10 @@ namespace OvaWebTest.Application
         {
             User user = await userManager.FindByNameAsync(userName);
             IdentityResult iRes = await userManager.DeleteAsync(user);
+
+            if (!iRes.Succeeded){
+                throw new UserNotFoundException(userName);
+            }
         }
     }
 }
