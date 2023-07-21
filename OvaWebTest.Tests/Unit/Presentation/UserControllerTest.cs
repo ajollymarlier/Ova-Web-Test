@@ -11,6 +11,7 @@ using OvaWebTest.Tests.Stubs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OvaWebTest.Domain;
 
 namespace OvaWebTest.Tests.Unit.Presentation
 {
@@ -75,6 +76,39 @@ namespace OvaWebTest.Tests.Unit.Presentation
             mockUserService.CreateAsync(userSignUp).Throws(new Exception("An error occured."));
 
             ObjectResult result = await userController.SignUp(userSignUp) as ObjectResult;
+
+            Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GivenUserName_WhenSearchExistingUser_ThenOK()
+        {
+            UserDTO user = userStub.GivenAUserDTO();
+            mockUserService.GetProfileAsync(user.UserName).Returns(user);
+
+            ObjectResult result = await userController.GetUserProfile(user.UserName) as ObjectResult;
+
+            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GivenUserName_WhenSearchNonExisitingUser_ThenBadRequest()
+        {
+            UserDTO user = userStub.GivenAUserDTO();
+            mockUserService.GetProfileAsync(user.UserName).Throws(new UserNotFoundException(user.UserName));
+
+            ObjectResult result = await userController.GetUserProfile(user.UserName) as ObjectResult;
+
+            Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
+        }   
+
+        [Test]
+        public async Task GivenUserName_WhenSearchRaisedUnhandledException_ThenBadRequest()
+        {
+            UserDTO user = userStub.GivenAUserDTO();
+            mockUserService.GetProfileAsync(user.UserName).Throws(new Exception("An error occurred."));
+
+            ObjectResult result = await userController.GetUserProfile(user.UserName) as ObjectResult;
 
             Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
         }

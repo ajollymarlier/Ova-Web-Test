@@ -33,7 +33,7 @@ namespace OvaWebTest.Presentation
         public async Task<IActionResult> SignUp(UserSignUpDTO userSignUpDTO)
         {
             ObjectResult finalCodeRes;
-            
+
             try{ 
                 UserDTO userDTO = await userService.CreateAsync(userSignUpDTO); 
                 finalCodeRes = StatusCode(StatusCodes.Status201Created, userDTO);
@@ -60,13 +60,20 @@ namespace OvaWebTest.Presentation
         [HttpGet]
         public async Task<IActionResult> GetUserProfile(string userName)
         {
+            ObjectResult finalCodeRes;
+
             try {
                 UserDTO userDTO = await userService.GetProfileAsync(userName);
-                return StatusCode(StatusCodes.Status200OK, userDTO);
+                finalCodeRes = StatusCode(StatusCodes.Status200OK, userDTO);
             }
-            catch{
-                return StatusCode(StatusCodes.Status400BadRequest);
+            catch (UserNotFoundException e){
+                finalCodeRes = StatusCode(StatusCodes.Status400BadRequest, userName);
             }
+            catch {
+                finalCodeRes = StatusCode(StatusCodes.Status500InternalServerError, userName);
+            }
+
+            return finalCodeRes;    
         }
 
         /// <summary>

@@ -23,7 +23,6 @@ namespace OvaWebTest.Application
 
         /// <summary>
         /// Create a user from a sign up request.
-        /// TODO: Program all error handling for the user creation functionality.
         /// </summary>
         /// <param name="userSignUpDTO">The sign up request</param>
         /// <returns>The user information</returns>
@@ -52,7 +51,13 @@ namespace OvaWebTest.Application
         public async Task<UserDTO> GetProfileAsync(string userName)
         {
             User user = await userManager.FindByNameAsync(userName);
-            return userDTOAssembler.Assemble(user);
+
+            if (user is null){
+                throw new UserNotFoundException(userName);
+            }
+            else {
+                return userDTOAssembler.Assemble(user);
+            }
         }
 
         /// <summary>
