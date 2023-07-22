@@ -87,10 +87,13 @@ namespace OvaWebTest.Presentation
         {
             try{
                 await userService.DeleteAsync(userName);
-                return StatusCode(StatusCodes.Status200OK);
+                return StatusCode(StatusCodes.Status200OK, userName);
             }
-            catch{
-                return StatusCode(StatusCodes.Status400BadRequest);
+            catch (UserNotFoundException e){
+                return StatusCode(StatusCodes.Status400BadRequest, userName);
+            }
+            catch {
+                return StatusCode(StatusCodes.Status500InternalServerError, userName);
             }
         }
     }

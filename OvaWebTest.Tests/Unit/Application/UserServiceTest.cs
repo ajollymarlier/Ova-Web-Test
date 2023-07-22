@@ -7,6 +7,7 @@ using OvaWebTest.Application.DTOs;
 using OvaWebTest.Application.Exceptions;
 using OvaWebTest.Domain;
 using OvaWebTest.Tests.Stubs;
+using System;
 using System.Threading.Tasks;
 
 namespace OvaWebTest.Tests.Unit.Application
@@ -31,6 +32,9 @@ namespace OvaWebTest.Tests.Unit.Application
 
             userService = new UserService(mockUserManager);
         }
+
+        //User Sign Up Test Cases
+        // --------------------------------------------------------------------------------------------
 
         [Test]
         public async Task GivenCreationRequest_WhenCreatingUser_ThenUserDTOIsReturned()
@@ -64,6 +68,54 @@ namespace OvaWebTest.Tests.Unit.Application
             mockUserManager.CreateAsync(Arg.Any<User>()).Returns(IdentityResult.Failed());
 
             Assert.ThrowsAsync<UserCreationException>(() => userService.CreateAsync(userSignUp));
+        }
+
+        // Find User Profile Test Cases
+        // --------------------------------------------------------------------------------------------------
+
+        [Test]
+        public async Task GivenSearchProfileRequest_WhenFindingExistingProfile_ThenUserDTOIsReturned()
+        {
+            User user = userStub.GivenAUser();
+            mockUserManager.FindByNameAsync(user.UserName).Returns(user);
+
+            UserDTO userDTO = await userService.GetProfileAsync(user.UserName);
+
+            Assert.AreEqual(user.UserName, userDTO.UserName);
+            Assert.AreEqual(user.FirstName, userDTO.FirstName);
+            Assert.AreEqual(user.LastName, userDTO.LastName);
+            Assert.AreEqual(user.Email, userDTO.Email);
+        }
+
+        [Test]
+        public async Task GivenSearchProfileRequest_WhenFindingNonExistingProfile_ThenUserNotFoundExceptionIsThrown()
+        {
+            User user = userStub.GivenAUser();
+
+            Assert.ThrowsAsync<UserNotFoundException>(async () => await userService.GetProfileAsync(user.UserName));
+        }
+
+        // Delete User Profile Test Cases
+        // --------------------------------------------------------------------------------------------------
+
+        [Test]
+        public async Task GivenDeleteProfileRequest_WhenFindingExistingProfile_ThenUserIsDeleted()
+        {
+            User user = userStub.GivenAUser();
+            mockUserManager.FindByNameAsync(user.UserName).Returns(user);
+            mockUserManager.DeleteAsync(user).Returns(IdentityResult.Success);
+
+            await userService.DeleteAsync(user.UserName);
+            Assert.Pass();
+        }
+
+        [Test]
+        public async Task GivenDeleteProfileRequest_WhenFindingNonExistingProfile_ThenUserNotFoundExceptionIsThrown()
+        {
+            User user = userStub.GivenAUser();
+            mockUserManager.DeleteAsync(user).Returns(IdentityResult.Failed());
+
+            Assert.ThrowsAsync<UserNotFoundException>(async () => await userService.DeleteAsync(user.UserName));
         }
     }
 }

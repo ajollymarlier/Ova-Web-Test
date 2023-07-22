@@ -69,7 +69,7 @@ namespace OvaWebTest.Application
             User user = await userManager.FindByNameAsync(userName);
             IdentityResult iRes = await userManager.DeleteAsync(user);
 
-            if (!iRes.Succeeded){
+            if (iRes is null || !iRes.Succeeded){
                 throw new UserNotFoundException(userName);
             }
         }

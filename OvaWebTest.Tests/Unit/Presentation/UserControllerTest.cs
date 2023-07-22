@@ -35,6 +35,9 @@ namespace OvaWebTest.Tests.Unit.Presentation
             userController = new UserController(mockUserService);
         }
 
+        //Sign Up Test Cases
+        // -------------------------------------------------------------------------------------------------------
+
         [Test]
         public async Task GivenUserRegistration_WhenSignUpValidUser_ThenCreated()
         {
@@ -80,6 +83,9 @@ namespace OvaWebTest.Tests.Unit.Presentation
             Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
         }
 
+        //Find User Profile Test Cases
+        // --------------------------------------------------------------------------------------------------------------------
+
         [Test]
         public async Task GivenUserName_WhenSearchExistingUser_ThenOK()
         {
@@ -103,12 +109,48 @@ namespace OvaWebTest.Tests.Unit.Presentation
         }   
 
         [Test]
-        public async Task GivenUserName_WhenSearchRaisedUnhandledException_ThenBadRequest()
+        public async Task GivenUserName_WhenSearchRaiseUnhandledException_ThenInternalServerError()
         {
             UserDTO user = userStub.GivenAUserDTO();
             mockUserService.GetProfileAsync(user.UserName).Throws(new Exception("An error occurred."));
 
             ObjectResult result = await userController.GetUserProfile(user.UserName) as ObjectResult;
+
+            Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
+        }
+
+        //Delete User Test Cases
+        // ------------------------------------------------------------------------------------------------------------
+
+        [Test]
+        public async Task GivenUserName_WhenDeleteExistingUser_ThenOK()
+        {
+            UserDTO user = userStub.GivenAUserDTO();
+            await mockUserService.DeleteAsync(user.UserName);
+
+            ObjectResult result = await userController.DeleteUser(user.UserName) as ObjectResult;
+
+            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GivenUserName_WhenDeleteNonExistingUser_ThenBadRequest()
+        {
+            UserDTO user = userStub.GivenAUserDTO();
+            mockUserService.DeleteAsync(user.UserName).Throws(new UserNotFoundException(user.UserName));
+
+            ObjectResult result = await userController.DeleteUser(user.UserName) as ObjectResult;
+
+            Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GivenUserName_WhenDeleteRaiseUnhandledException_ThenInternalServerError()
+        {
+            UserDTO user = userStub.GivenAUserDTO();
+            mockUserService.DeleteAsync(user.UserName).Throws(new Exception("An error occurred."));
+
+            ObjectResult result = await userController.DeleteUser(user.UserName) as ObjectResult;
 
             Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
         }
