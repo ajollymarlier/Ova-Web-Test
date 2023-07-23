@@ -7,6 +7,12 @@ using OvaWebTest.Application;
 using OvaWebTest.Domain;
 using OvaWebTest.Persistence.InMemory;
 using Microsoft.AspNetCore.Cors;
+using OvaWebTest.Persistence;
+using MongoDB.Driver;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel;
+using System;
 
 namespace OvaWebTest
 {
@@ -44,6 +50,13 @@ namespace OvaWebTest
             {
                 builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
             }));
+
+            services.Configure<UserDatabaseSettings>((settings) =>
+            {
+                settings.UserCollectionName = "Users";
+                settings.ConnectionString = "mongodb+srv://arunjm00:NqiQGs90I8nBvfBp@cluster0.qwbr7xp.mongodb.net/?retryWrites=true&w=majority";
+                settings.DatabaseName = "UserDatabase";
+            });
         }
 
         private void InjectApplicationDependencies(IServiceCollection services)
@@ -54,6 +67,14 @@ namespace OvaWebTest
         private void InjectInfraDependencies(IServiceCollection services)
         {
             services.AddSingleton<IUserStore<User>, UserRepository>();
+
+            services.AddScoped<UserDatabaseManager, UserDatabaseManager>();
+
+            services.AddSingleton<IUserDatabaseSettings>(sp => 
+                sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value);
+
+            services.AddSingleton<IMongoClient>(s => 
+            new MongoClient("mongodb+srv://arunjm00:NqiQGs90I8nBvfBp@cluster0.qwbr7xp.mongodb.net/?retryWrites=true&w=majority"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

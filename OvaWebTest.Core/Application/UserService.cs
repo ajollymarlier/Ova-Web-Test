@@ -4,16 +4,18 @@ using OvaWebTest.Domain;
 using System;
 using System.Threading.Tasks;
 using OvaWebTest.Application.Exceptions;
+using MongoDB.Driver;
+using OvaWebTest.Persistence;
 
 namespace OvaWebTest.Application
 {
     public class UserService : IUserService
     {
-        private readonly UserManager<User> userManager;
+        private readonly UserDatabaseManager userManager;
         private readonly UserFactory userFactory;
         private readonly UserDTOAssembler userDTOAssembler;
 
-        public UserService(UserManager<User> userManager)
+        public UserService(UserDatabaseManager userManager)
         {
             this.userManager = userManager;
 
