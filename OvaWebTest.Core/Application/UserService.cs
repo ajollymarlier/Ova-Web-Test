@@ -35,13 +35,13 @@ namespace OvaWebTest.Application
             IdentityResult ires = await userManager.CreateAsync(user);
 
             if (ires is null){
-                throw new UserAlreadyExistsException(userSignUpDTO);
+                throw new UserCreationException(userSignUpDTO, ires.Errors);
             }
             else if (ires != null && ires.Succeeded){
                 return userDTOAssembler.Assemble(user);
             }
             else {
-                throw new UserCreationException(userSignUpDTO, ires.Errors);
+                throw new UserAlreadyExistsException(userSignUpDTO);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MongoDB.Driver;
 using NSubstitute;
 using NUnit.Framework;
 using OVA.StellarXWebPortalTest.Mocks;
@@ -8,7 +9,9 @@ using OvaWebTest.Application.Exceptions;
 using OvaWebTest.Domain;
 using OvaWebTest.Tests.Stubs;
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using System.Web.Http.Controllers;
 
 namespace OvaWebTest.Tests.Unit.Application
 {
@@ -28,6 +31,7 @@ namespace OvaWebTest.Tests.Unit.Application
         public void SetUp()
         {
             userStub = new UserStub();
+
             mockUserManager = Substitute.For<MockUserManager>();
 
             userService = new UserService(mockUserManager);
@@ -57,7 +61,7 @@ namespace OvaWebTest.Tests.Unit.Application
             UserSignUpDTO userSignUp = userStub.GivenAUserSignUpDTO();
             User user = userStub.GivenAUser();
             mockUserManager.FindByNameAsync(user.UserName).Returns(user);
-
+            
             Assert.ThrowsAsync<UserAlreadyExistsException>(() => userService.CreateAsync(userSignUp));
         }
 

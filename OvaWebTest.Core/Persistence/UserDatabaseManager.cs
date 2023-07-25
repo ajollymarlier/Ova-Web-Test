@@ -5,6 +5,7 @@ using OvaWebTest.Domain;
 using OvaWebTest.Application.DTOs;
 using MongoDB.Driver;
 using ZstdSharp.Unsafe;
+using System.Collections.Generic;
 
 namespace OvaWebTest.Persistence
 {
@@ -16,10 +17,16 @@ namespace OvaWebTest.Persistence
             _users = database.GetCollection<User>(settings.UserCollectionName);
         }
 
-        public async Task<IdentityResult> CreateAsync(User user) //TODO is this supposed to be async?
+        public async Task<IdentityResult> CreateAsync(User user) 
         {
+            long numFound = _users.Find(tempUser => tempUser.UserName == user.UserName).CountDocuments();
+
+            if (numFound > 0){
+                return IdentityResult.Failed();
+            }
+
             try{
-                _users.InsertOne(user);
+                await _users.InsertOneAsync(user);
                 return IdentityResult.Success;
             }
             catch{
@@ -29,19 +36,23 @@ namespace OvaWebTest.Persistence
 
         public async Task<User> FindByNameAsync(string userName)
         {
+            IAsyncCursor<User> cursor = null;
+            List<User> userList = null;
+
             try {
-                return _users.Find(user => user.UserName == userName).FirstOrDefault();
+                cursor = await _users.FindAsync(user => user.UserName == userName);
+                userList = await cursor.ToListAsync();
+                return userList[0];
             }
             catch{
                 return null;
             }
-            
         }
 
         public async Task<IdentityResult> DeleteAsync(User user)
         {
             try{
-                _users.DeleteOne(searchUser => searchUser.UserName == user.UserName);
+                await _users.DeleteOneAsync(searchUser => searchUser.UserName == user.UserName);
                 return IdentityResult.Success;
             }
             catch{

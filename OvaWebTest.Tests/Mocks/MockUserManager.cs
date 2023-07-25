@@ -5,22 +5,18 @@ using NSubstitute;
 using OvaWebTest.Domain;
 using System;
 using System.Collections.Generic;
+using OvaWebTest.Persistence;
+using MongoDB.Driver;
 
 namespace OVA.StellarXWebPortalTest.Mocks
 {
-    public class MockUserManager : UserManager<User>
+    public class MockUserManager : UserDatabaseManager
     {
         public MockUserManager()
-            : base(Substitute.For<IUserStore<User>>(),
-                   Substitute.For<IOptions<IdentityOptions>>(),
-                   Substitute.For<IPasswordHasher<User>>(),
-                   Substitute.For<IEnumerable<IUserValidator<User>>>(),
-                   Substitute.For<IEnumerable<IPasswordValidator<User>>>(),
-                   Substitute.For<ILookupNormalizer>(),
-                   Substitute.For<IdentityErrorDescriber>(),
-                   Substitute.For<IServiceProvider>(),
-                   Substitute.For<ILogger<UserManager<User>>>())
-        {
-        }
+            : base(
+                Substitute.For<IUserDatabaseSettings>(),
+                Substitute.For<IMongoClient>()
+            )
+        {}
     }
 }
