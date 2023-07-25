@@ -61,10 +61,10 @@ function App() {
             })
 
             if (response.status == 201){
-              alert("User Created!")
+              alert("User " + signUpUsername +  " Created!")
             }
             else {
-              alert("Could Not Create User!")
+              alert("Could Not Create User " + signUpUsername + "!")
             }
           }}>
 
@@ -91,14 +91,18 @@ function App() {
               dataType: "json"
             })
 
-            const resBody = await response.json()
+            const resBody = {}
+            if (response.status == 200){
+              resBody = await response.json()
+            }
+            
             console.log(resBody)
 
             if (resBody.userName != undefined){
-              alert(resBody.userName)
+              alert(JSON.stringify(resBody))
             } 
             else {
-              alert("No User Found!")
+              alert("No User " + searchUsername + " Found!")
             }
           }}>
 
@@ -122,10 +126,10 @@ function App() {
             })
 
             if (response.status != 400){
-              alert("User Deleted!")
+              alert("User " + deleteUsername + " Deleted!")
             }
             else {
-              alert("User Not Found!")
+              alert("User " + deleteUsername + " Not Found!")
             }
           }}>
 
