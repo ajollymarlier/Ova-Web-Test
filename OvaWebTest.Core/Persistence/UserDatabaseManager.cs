@@ -16,14 +16,20 @@ namespace OvaWebTest.Persistence
             _users = database.GetCollection<User>(settings.UserCollectionName);
         }
 
-        public async Task<IdentityResult> CreateAsync(User user) //TODO is this supposed to be async?
+        public async Task<IdentityResult> CreateAsync(User user) 
         {
             try{
+                IFindFluent<User, User> searchUsers = _users.Find(searchUser => user.UserName == searchUser.UserName);
+
+                if(searchUsers.CountDocuments() > 0){
+                    return null;
+                }
+
                 _users.InsertOne(user);
                 return IdentityResult.Success;
             }
             catch{
-                return null;
+                return IdentityResult.Failed();
             }
         }
 
