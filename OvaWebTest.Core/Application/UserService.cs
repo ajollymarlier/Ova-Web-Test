@@ -11,11 +11,11 @@ namespace OvaWebTest.Application
 {
     public class UserService : IUserService
     {
-        private readonly UserDatabaseManager userManager;
+        private readonly IUserDatabaseManager userManager;
         private readonly UserFactory userFactory;
         private readonly UserDTOAssembler userDTOAssembler;
 
-        public UserService(UserDatabaseManager userManager)
+        public UserService(IUserDatabaseManager userManager)
         {
             this.userManager = userManager;
 

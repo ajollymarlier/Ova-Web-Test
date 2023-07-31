@@ -91,7 +91,7 @@ function App() {
               dataType: "json"
             })
 
-            const resBody = {}
+            let resBody = {}
             if (response.status == 200){
               resBody = await response.json()
             }

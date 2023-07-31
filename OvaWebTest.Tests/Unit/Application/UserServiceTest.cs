@@ -6,6 +6,7 @@ using OvaWebTest.Application;
 using OvaWebTest.Application.DTOs;
 using OvaWebTest.Application.Exceptions;
 using OvaWebTest.Domain;
+using OvaWebTest.Persistence;
 using OvaWebTest.Tests.Stubs;
 using System;
 using System.Threading.Tasks;
@@ -15,20 +16,19 @@ namespace OvaWebTest.Tests.Unit.Application
     /// <summary>
     /// You are prohibited from modifying the unit tests already present in the project. 
     /// In addition, they must all be able to pass when handing over your test.
-    /// TODO: Develop all the necessary unit tests in order to have adequate coverage of your code.
     /// </summary>
     [TestFixture]
     public class UserServiceTest
     {
         private UserStub userStub;
-        private MockUserManager mockUserManager;
+        private IUserDatabaseManager mockUserManager;
         private IUserService userService;
 
         [SetUp]
         public void SetUp()
         {
             userStub = new UserStub();
-            mockUserManager = Substitute.For<MockUserManager>();
+            mockUserManager = Substitute.For<IUserDatabaseManager>();
 
             userService = new UserService(mockUserManager);
         }

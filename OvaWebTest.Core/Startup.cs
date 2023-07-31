@@ -68,7 +68,7 @@ namespace OvaWebTest
         {
             services.AddSingleton<IUserStore<User>, UserRepository>();
 
-            services.AddScoped<UserDatabaseManager, UserDatabaseManager>();
+            services.AddScoped<IUserDatabaseManager, UserDatabaseManager>();
 
             services.AddSingleton<IUserDatabaseSettings>(sp => 
                 sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value);
